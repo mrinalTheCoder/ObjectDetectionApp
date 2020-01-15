@@ -20,7 +20,8 @@ Then the `MobileNetObjDetector` convertes the `outputMap` into a List of [Detect
 The [OverlayView](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/customview/OverlayView.java) takes care of resizing the bounding bozes as per the mobile device screen preview size and render it on top of the camera frame.
 
 ### Results
-![Dining Table with Cups](results/cups.jpg)<br/><br/>
+<img src="results/cups.jpg" width="40" height="100" />
+![Dining Table with Cups](results/cups.jpg&s=40)<br/><br/>
 ![TV](results/tv.jpg)<br/><br/>
 ![Microwave](results/microwave.jpg)<br/><br/>
 
