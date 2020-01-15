@@ -31,7 +31,7 @@ public class MobileNetObjDetector {
     private static final float IMAGE_MEAN = 128.0f;
     private static final float IMAGE_STD = 128.0f;
     private static final int NUM_DETECTIONS = 10;
-    private static final String LOGGING_TAG = "objdetection";
+    private static final String LOGGING_TAG = MobileNetObjDetector.class.getName();
 
     private ByteBuffer imgData;
     private Interpreter tfLite;
