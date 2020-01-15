@@ -9,9 +9,12 @@ TensorFlow Lite is not designed to train a model, the model can be trained on a 
 I have followed the [TensorFlow Lite example for Object Detection](https://github.com/tensorflow/examples/tree/master/lite/examples/object_detection).
 In this app we will get a running feed from the mobile device camera, then, run object detection on the frame in background, and then overlay the results of object detection on the frame with a bounding box.<br/><br/>
 First step here is to create an android app using Android Studio. My main Activity is [MainActivity](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/MainActivity.java) which will invoke the object detector. It extends the [CameraActivity](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/CameraActivity.java) which in turn uses a [CameraConnectionFragment](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/CameraConnectionFragment.java) to manage all camera related stuff.<br/><br/>
-The object detector is encapsulated by [MobileNetObjDetector](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/deepmodel/MobileNetObjDetector.java) which initializes the model using [TensorFlow Lite Interpreter](https://www.tensorflow.org/lite/guide/inference#load_and_run_a_model_in_java).<br/>
-`tfLite = new Interpreter(loadModelFile(assetManager));`<br/>
-For object detection, it feeds an image of size 300x300 to the model and obtains the output as defined by the model. </br>
-`tfLite.runForMultipleInputsOutputs(inputArray, outputMap);`<br/>
-Then it convertes the `outputMap` into a List of [DetectionResult](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/deepmodel/DetectionResult.java) which can be easily consumed for painting the overlay. Each `DetectionResult` has the label detected, the confidence score of the detection and the bounding box of the detection.<br/><br/>
+The object detector is encapsulated by [MobileNetObjDetector](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/deepmodel/MobileNetObjDetector.java) which uses the [TensorFlow Lite Interpreter](https://www.tensorflow.org/lite/guide/inference#load_and_run_a_model_in_java).<br/><br/>
+`import org.tensorflow.lite.Interpreter;`<br/><br/>
+Its very easy to initialize the Interpreter with the model:<br/><br/>
+`private Interpreter tflite;
+tfLite = new Interpreter(loadModelFile(assetManager));`<br/><br/>
+For object detection, it feeds an image of size 300x300 to the model and obtains the output as defined by the model.<br/><br/>
+`tfLite.runForMultipleInputsOutputs(inputArray, outputMap);`<br/><br/>
+Then the `MobileNetObjDetector` convertes the `outputMap` into a List of [DetectionResult](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/deepmodel/DetectionResult.java) which can be easily consumed for painting the overlay. Each `DetectionResult` has the label detected, the confidence score of the detection and the bounding box of the detection.<br/><br/>
 The [OverlayView](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/master/app/src/main/java/com/objdetector/customview/OverlayView.java) takes care of resizing the bounding bozes as per the mobile device screen preview size and render it on top of the camera frame.
