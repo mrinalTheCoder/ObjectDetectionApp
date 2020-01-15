@@ -24,4 +24,4 @@ The [OverlayView](https://github.com/mrinalTheCoder/ObjectDetectionApp/blob/mast
 ![TV](https://drive.google.com/file/d/14KVNN5wOkQKjW8gmYFKUfi50EkUG0Kcu/view)
 ![Microwave](https://drive.google.com/file/d/14I64oZUMVdaahYL7jH8lGQepMEvHE4S9/view)
 
-Checkout more in a video here](https://drive.google.com/file/d/0B_1Jj2xWSEEWd1FTdlkyZkZBYzQtMm82WlpHZGwxYVY5ZG9v/view?usp=sharing)
+Checkout more in a video [here](https://drive.google.com/file/d/0B_1Jj2xWSEEWd1FTdlkyZkZBYzQtMm82WlpHZGwxYVY5ZG9v/view?usp=sharing)
