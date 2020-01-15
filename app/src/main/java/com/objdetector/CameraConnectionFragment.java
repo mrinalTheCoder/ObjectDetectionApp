@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -22,6 +23,7 @@ import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
@@ -44,6 +46,8 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 public class CameraConnectionFragment extends Fragment {
+    private static final int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
+    private static final int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray(4);
 
     static {
@@ -53,10 +57,10 @@ public class CameraConnectionFragment extends Fragment {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    private static final String LOGGING_TAG = "objdetector";
-    private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
+    private static final String LOGGING_TAG = CameraConnectionFragment.class.getName();
+    private static final Size DESIRED_PREVIEW_SIZE = new Size(screenWidth, screenHeight);
 
-    private static final int MINIMUM_PREVIEW_SIZE = 320;
+    private static final int MINIMUM_PREVIEW_SIZE = 500;
     private static final String FRAGMENT_DIALOG = "dialog";
     private final Semaphore cameraOpenCloseLock = new Semaphore(1);
     private OnImageAvailableListener imageListener;
@@ -141,9 +145,11 @@ public class CameraConnectionFragment extends Fragment {
     private static Size chooseOptimalSize(final Size[] choices) {
         final int minSize = Math.max(Math.min(DESIRED_PREVIEW_SIZE.getWidth(),
                 DESIRED_PREVIEW_SIZE.getHeight()), MINIMUM_PREVIEW_SIZE);
+        Log.i(LOGGING_TAG, "Min size: " + minSize);
 
         // Collect the supported resolutions that are at least as big as the preview Surface
         final List<Size> bigEnough = new ArrayList();
+        final List<Size> tooSmall = new ArrayList<Size>();
         for (final Size option : choices) {
             if (option.equals(DESIRED_PREVIEW_SIZE)) {
                 return DESIRED_PREVIEW_SIZE;
@@ -151,11 +157,20 @@ public class CameraConnectionFragment extends Fragment {
 
             if (option.getHeight() >= minSize && option.getWidth() >= minSize) {
                 bigEnough.add(option);
+            } else {
+                tooSmall.add(option);
             }
         }
-
         // Pick the smallest of those, assuming we found any
-        return (bigEnough.size() > 0) ? Collections.min(bigEnough, new CompareSizesByArea(  )) : choices[0];
+        Size chosenSize = (bigEnough.size() > 0) ? Collections.min(bigEnough, new CompareSizesByArea(  )) : choices[0];
+
+        Log.i(LOGGING_TAG, "Desired size: " + DESIRED_PREVIEW_SIZE + ", min size: " + minSize + "x" + minSize);
+        Log.i(LOGGING_TAG, "Valid preview sizes: [" + TextUtils.join(", ", bigEnough) + "]");
+        Log.i(LOGGING_TAG, "Rejected preview sizes: [" + TextUtils.join(", ", tooSmall) + "]");
+        Log.i(LOGGING_TAG, "Chosen preview size: " + chosenSize);
+
+        //return new Size(DESIRED_PREVIEW_SIZE.getHeight(), DESIRED_PREVIEW_SIZE.getWidth());
+        return chosenSize;
     }
 
     private void showToast(final String text) {
@@ -184,14 +199,18 @@ public class CameraConnectionFragment extends Fragment {
                 }
 
                 sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+                Log.i(LOGGING_TAG, "Sensor Orientation: " + sensorOrientation);
 
                 // Danger, W.R.! Attempting to use too large a preview size could  exceed the camera
                 // bus' bandwidth limitation, resulting in gorgeous previews but the storage of
                 // garbage capture data.
                 previewSize = chooseOptimalSize(map.getOutputSizes(SurfaceTexture.class));
 
+
                 // We fit the aspect ratio of TextureView to the size of preview we picked.
                 final int orientation = getResources().getConfiguration().orientation;
+                Log.i(LOGGING_TAG, "Resource Orientation: " + orientation);
+
                 if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
                     textureView.setAspectRatio(previewSize.getWidth(), previewSize.getHeight());
                 } else {

@@ -22,7 +22,7 @@ import java.util.List;
 
 public class MainActivity extends CameraActivity implements OnImageAvailableListener {
     private static int MODEL_IMAGE_INPUT_SIZE = 300;
-    private static String LOGGING_TAG = "objdetector";
+    private static String LOGGING_TAG = MainActivity.class.getName();
     private static float TEXT_SIZE_DIP = 10;
 
     private Integer sensorOrientation;

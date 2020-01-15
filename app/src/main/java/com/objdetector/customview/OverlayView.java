@@ -1,16 +1,14 @@
 package com.objdetector.customview;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.media.MediaPlayer;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
-import android.widget.Toast;
 
 import com.objdetector.deepmodel.DetectionResult;
 
@@ -20,6 +18,7 @@ import java.util.List;
 
 public class OverlayView extends View {
     private static int INPUT_SIZE = 416;
+    private static final String LOGGING_TAG = "objdetector";
 
     private final Paint paint;
     private final List<DrawCallback> callbacks = new LinkedList();
@@ -80,6 +79,10 @@ public class OverlayView extends View {
         float sizeMultiplier = Math.min((float) this.getWidth() / (float) INPUT_SIZE,
                 overlayViewHeight / (float) INPUT_SIZE);
 
+        Log.i(LOGGING_TAG, "Before recalculating: ");
+        Log.i(LOGGING_TAG, "width: " + (rect.right - rect.left));
+        Log.i(LOGGING_TAG, "height: " + (rect.bottom - rect.top));
+
         float offsetX = (this.getWidth() - INPUT_SIZE * sizeMultiplier) / 2;
         float offsetY = (overlayViewHeight - INPUT_SIZE * sizeMultiplier) / 2 + resultsViewHeight;
 
@@ -89,23 +92,11 @@ public class OverlayView extends View {
         float right = Math.min(rect.right * sizeMultiplier, this.getWidth() - padding);
         float bottom = Math.min(rect.bottom * sizeMultiplier + offsetY, this.getHeight() - padding);
 
+        Log.i(LOGGING_TAG, "After recalculating: ");
+        Log.i(LOGGING_TAG, "width: " + (right - left));
+        Log.i(LOGGING_TAG, "height: " + (bottom - top));
+
         return new RectF(left, top, right, bottom);
     }
 
-    public static void playAssetSound(Context context, String soundFileName) {
-        try {
-            MediaPlayer mediaPlayer = new MediaPlayer();
-
-            AssetFileDescriptor descriptor = context.getAssets().openFd(soundFileName);
-            mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-            descriptor.close();
-
-            mediaPlayer.prepare();
-            mediaPlayer.setVolume(1f, 1f);
-            mediaPlayer.setLooping(false);
-            mediaPlayer.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

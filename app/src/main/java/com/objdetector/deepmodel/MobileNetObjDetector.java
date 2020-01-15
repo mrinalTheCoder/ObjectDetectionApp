@@ -7,7 +7,6 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import org.tensorflow.lite.Interpreter;
-import org.tensorflow.lite.Tensor;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
